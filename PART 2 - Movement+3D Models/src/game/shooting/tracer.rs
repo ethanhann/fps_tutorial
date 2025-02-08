@@ -33,7 +33,7 @@ fn update_tracers(
     time: Res<Time>,
 ) {
     for (mut tracer, mut transform, entity) in tracer_query.iter_mut() {
-        tracer.time_alive += time.delta_seconds();
+        tracer.time_alive += time.delta_secs();
 
         transform.translation = Vec3::lerp(
             tracer.start_position,

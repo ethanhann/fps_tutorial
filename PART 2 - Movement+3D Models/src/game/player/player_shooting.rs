@@ -1,5 +1,5 @@
 use bevy::{prelude::*, window::PrimaryWindow};
-use bevy_rapier3d::{plugin::RapierContext, prelude::*};
+use bevy_rapier3d::prelude::*;
 
 use super::{camera_controller::CameraController, player::Player};
 use crate::game::{
@@ -15,7 +15,7 @@ pub struct TracerSpawnSpot;
 pub fn update_player(
     mouse_input: Res<ButtonInput<MouseButton>>,
     mut commands: Commands,
-    rapier_context: Res<RapierContext>,
+    rapier_context: ReadDefaultRapierContext,
     mut player_query: Query<(&mut Player, &mut Transform)>,
     camera_query: Query<(&Camera, &GlobalTransform), With<CameraController>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -29,12 +29,12 @@ pub fn update_player(
     let (camera, camera_global_transform) = camera_query.get_single().unwrap();
     if let Ok((_player, _transform)) = player_query.get_single_mut() {
         if mouse_input.just_pressed(MouseButton::Left) {
-            let Some(ray) = camera.viewport_to_world(
-                &camera_global_transform,
-                Vec2::new(window.width() / 2., window.height() / 2.),
-            ) else {
-                return;
-            };
+            let ray = camera
+                .viewport_to_world(
+                    &camera_global_transform,
+                    Vec2::new(window.width() / 2., window.height() / 2.),
+                )
+                .expect("Unable to get ray");
             let predicate = |handle| target_query.get(handle).is_ok();
             let query_filter = QueryFilter::new().predicate(&predicate);
             let hit = rapier_context.cast_ray_and_get_normal(
@@ -60,8 +60,8 @@ pub fn update_player(
                 commands.spawn((
                     PbrBundle {
                         transform: Transform::from_translation(Vec3::splat(f32::MAX)),
-                        mesh: meshes.add(Cuboid::from_size(Vec3::new(0.1, 0.1, 1.0))),
-                        material: materials.add(tracer_material),
+                        mesh: Mesh3d(meshes.add(Cuboid::from_size(Vec3::new(0.1, 0.1, 1.0)))),
+                        material: MeshMaterial3d(materials.add(tracer_material)),
                         ..default()
                     },
                     shooting::tracer::BulletTracer::new(

@@ -4,7 +4,6 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use rand::*;
 use rngs::ThreadRng;
-
 use crate::game::player::player_shooting::Shootable;
 
 pub struct TargetsPlugin;
@@ -63,10 +62,11 @@ fn init_grid_shot(
     for _i in 0..grid_shot.max_targets {
         commands.spawn((
             Collider::cuboid(collider_radius, collider_radius, collider_radius),
+
             PbrBundle {
                 transform: Transform::from_xyz(0., 0., -40.),
-                mesh: meshes.add(Sphere::new(target_radius)),
-                material: target_material.clone(),
+                mesh: Mesh3d(meshes.add(Sphere::new(target_radius))),
+                material: MeshMaterial3d(target_material.clone()),
                 ..default()
             },
             Target {},

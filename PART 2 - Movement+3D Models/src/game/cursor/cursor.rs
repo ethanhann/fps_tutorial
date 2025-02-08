@@ -21,14 +21,14 @@ pub struct Cursor {
 impl Cursor {
     pub fn invert_lock(&mut self, window: &mut Mut<'_, Window>) {
         self.locked = !self.locked;
-        window.cursor.visible = !self.locked;
+        window.cursor_options.visible = !self.locked;
         if self.locked {
             let window_width = window.width();
             let window_height = window.height();
-            window.cursor.grab_mode = CursorGrabMode::Locked;
+            window.cursor_options.grab_mode = CursorGrabMode::Locked;
             window.set_cursor_position(Some(Vec2::new(window_width / 2., window_height / 2.)));
         } else {
-            window.cursor.grab_mode = CursorGrabMode::None;
+            window.cursor_options.grab_mode = CursorGrabMode::None;
         }
     }
 }
