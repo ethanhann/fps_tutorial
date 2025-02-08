@@ -1,10 +1,10 @@
 use std::f32::consts::PI;
 
+use crate::game::player::player_shooting::Shootable;
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use rand::*;
 use rngs::ThreadRng;
-use crate::game::player::player_shooting::Shootable;
 
 pub struct TargetsPlugin;
 impl Plugin for TargetsPlugin {
@@ -29,8 +29,8 @@ pub struct GridShot {
 impl GridShot {
     pub fn generate_new_position(&self, rand: &mut ThreadRng) -> Vec2 {
         return (Vec2::new(
-            rand.gen_range(0..self.grid_size) as f32,
-            rand.gen_range(0..self.grid_size) as f32,
+            rand.random_range(0..self.grid_size) as f32,
+            rand.random_range(0..self.grid_size) as f32,
         ) - Vec2::new(self.grid_size as f32 / 2., 0.)
             + (Vec2::Y * 0.5))
             * self.cell_size;
@@ -62,13 +62,9 @@ fn init_grid_shot(
     for _i in 0..grid_shot.max_targets {
         commands.spawn((
             Collider::cuboid(collider_radius, collider_radius, collider_radius),
-
-            PbrBundle {
-                transform: Transform::from_xyz(0., 0., -40.),
-                mesh: Mesh3d(meshes.add(Sphere::new(target_radius))),
-                material: MeshMaterial3d(target_material.clone()),
-                ..default()
-            },
+            Transform::from_xyz(0., 0., -40.),
+            Mesh3d(meshes.add(Sphere::new(target_radius))),
+            MeshMaterial3d(target_material.clone()),
             Target {},
             Shootable,
             DeadTarget,
@@ -83,7 +79,7 @@ fn update_targets(
     alive_targets: Query<&Transform, (With<Target>, Without<DeadTarget>)>,
 ) {
     let mut alive_target_positions = Vec::new();
-    let mut rand = thread_rng();
+    let mut rand = rng();
 
     for transform in alive_targets.iter() {
         alive_target_positions.push(transform.translation.xy());

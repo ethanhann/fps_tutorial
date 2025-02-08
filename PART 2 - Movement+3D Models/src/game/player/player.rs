@@ -1,7 +1,12 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use super::{camera_controller, input::*, player_movement::*, player_shooting::{update_player, TracerSpawnSpot}};
+use super::{
+    camera_controller,
+    input::*,
+    player_movement::*,
+    player_shooting::{update_player, TracerSpawnSpot},
+};
 use crate::game::{math::coordinates::blender_to_world, shooting};
 
 pub struct PlayerPlugin;
@@ -34,14 +39,9 @@ fn init_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     let fov = 103.0_f32.to_radians();
     let camera_entity = commands
         .spawn((
-            Camera3dBundle {
-                transform: Transform::IDENTITY,
-                projection: Projection::Perspective(PerspectiveProjection {
-                    fov,
-                    ..default()
-                }),
-                ..default()
-            },
+            Camera3d { ..default() },
+            Transform::IDENTITY,
+            Projection::Perspective(PerspectiveProjection { fov, ..default() }),
             camera_controller::CameraController {
                 sensitivity: 0.035,
                 rotation: Vec2::ZERO,
@@ -55,13 +55,7 @@ fn init_player(mut commands: Commands, asset_server: Res<AssetServer>) {
         .id();
     let spawn_spot = blender_to_world(Vec3::new(0.530462, 2.10557, -0.466568));
     let tracer_spawn_entity = commands
-        .spawn((
-            TransformBundle {
-                local: Transform::from_translation(spawn_spot),
-                ..Default::default()
-            },
-            TracerSpawnSpot,
-        ))
+        .spawn((Transform::from_translation(spawn_spot), TracerSpawnSpot))
         .id();
     let player_entity = commands
         .spawn((
@@ -70,10 +64,7 @@ fn init_player(mut commands: Commands, asset_server: Res<AssetServer>) {
                 gravity: 9.8,
                 speed: 20.0,
             },
-            SpatialBundle {
-                transform: Transform::from_translation(Vec3::new(0., 30., 0.)),
-                ..Default::default()
-            },
+            Transform::from_translation(Vec3::new(0., 30., 0.)),
             Collider::cuboid(1., 10., 1.),
             RigidBody::KinematicPositionBased,
             KinematicCharacterController {

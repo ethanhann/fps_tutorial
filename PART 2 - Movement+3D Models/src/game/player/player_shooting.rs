@@ -58,12 +58,9 @@ pub fn update_player(
                 };
 
                 commands.spawn((
-                    PbrBundle {
-                        transform: Transform::from_translation(Vec3::splat(f32::MAX)),
-                        mesh: Mesh3d(meshes.add(Cuboid::from_size(Vec3::new(0.1, 0.1, 1.0)))),
-                        material: MeshMaterial3d(materials.add(tracer_material)),
-                        ..default()
-                    },
+                    Transform::from_translation(Vec3::splat(f32::MAX)),
+                    Mesh3d(meshes.add(Cuboid::from_size(Vec3::new(0.1, 0.1, 1.0)))),
+                    MeshMaterial3d(materials.add(tracer_material)),
                     shooting::tracer::BulletTracer::new(
                         spawn_spot.translation(),
                         ray_intersection.point,

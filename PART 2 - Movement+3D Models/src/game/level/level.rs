@@ -21,24 +21,18 @@ fn init_level(
     });
 
     commands.spawn((
-            Collider::cuboid(1000., 0., 1000.),
-            PbrBundle {
-                material: MeshMaterial3d(level_material.clone()),
-                transform: Transform::IDENTITY,
-                mesh: Mesh3d(meshes.add(Plane3d::new(Vec3::Y, Vec2::splat(1000.)))),
-                ..default()
-            },
-            Shootable,
+        Collider::cuboid(1000., 0., 1000.),
+        MeshMaterial3d(level_material.clone()),
+        Transform::IDENTITY,
+        Mesh3d(meshes.add(Plane3d::new(Vec3::Y, Vec2::splat(1000.)))),
+        Shootable,
     ));
 
     commands.spawn((
         Collider::cuboid(30., 30., 30.),
-        PbrBundle {
-            material: MeshMaterial3d(level_material.clone()),
-            transform: Transform::from_xyz(0., 0., -100.),
-            mesh: Mesh3d(meshes.add(Cuboid::from_length(60.))),
-            ..default()
-        },
+        MeshMaterial3d(level_material.clone()),
+        Transform::from_xyz(0., 0., -100.),
+        Mesh3d(meshes.add(Cuboid::from_length(60.))),
         Shootable,
     ));
 
