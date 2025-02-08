@@ -16,20 +16,17 @@ pub fn update_player(
     mouse_input: Res<ButtonInput<MouseButton>>,
     mut commands: Commands,
     rapier_context: Res<RapierContext>,
-    mut player_query: Query<(
-        &mut Player,
-        &mut Transform,
-    )>,
-    camera_query : Query<(&Camera,&GlobalTransform),With<CameraController>>,
+    mut player_query: Query<(&mut Player, &mut Transform)>,
+    camera_query: Query<(&Camera, &GlobalTransform), With<CameraController>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
-    target_query: Query<Option<&Target>,With<Shootable>>,
-    spawn_spot : Query<&GlobalTransform,With<TracerSpawnSpot>>
+    target_query: Query<Option<&Target>, With<Shootable>>,
+    spawn_spot: Query<&GlobalTransform, With<TracerSpawnSpot>>,
 ) {
     let spawn_spot = spawn_spot.get_single().unwrap();
     let window = window_query.get_single().unwrap();
-    let (camera,camera_global_transform) = camera_query.get_single().unwrap();
+    let (camera, camera_global_transform) = camera_query.get_single().unwrap();
     if let Ok((_player, _transform)) = player_query.get_single_mut() {
         if mouse_input.just_pressed(MouseButton::Left) {
             let Some(ray) = camera.viewport_to_world(
@@ -38,9 +35,7 @@ pub fn update_player(
             ) else {
                 return;
             };
-            let predicate = |handle| {
-                target_query.get(handle).is_ok()
-            };
+            let predicate = |handle| target_query.get(handle).is_ok();
             let query_filter = QueryFilter::new().predicate(&predicate);
             let hit = rapier_context.cast_ray_and_get_normal(
                 ray.origin,
@@ -51,7 +46,7 @@ pub fn update_player(
             );
             if let Some((entity, ray_intersection)) = hit {
                 if let Ok(target) = target_query.get(entity) {
-                    if target.is_some(){
+                    if target.is_some() {
                         commands.entity(entity).insert(DeadTarget);
                     }
                 }
